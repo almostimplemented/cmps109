@@ -18,19 +18,28 @@ inode::inode(inode_t init_type):
            contents = make_shared<plain_file>();
            break;
       case DIR_INODE:
-           contents = make_shared<directory>();
+           contents = make_shared<directory>(inode_ptr(this));
            break;
    }
    DEBUGF ('i', "inode " << inode_nr << ", type = " << type);
 }
 
+inode::inode(inode_t init_type, inode_ptr parent):
+   inode_nr (next_inode_nr++), type (init_type)
+{
+   switch (type) {
+      case PLAIN_INODE:
+           throw logic_error ("invalid constructor for plain inode");
+           break;
+      case DIR_INODE:
+           contents = make_shared<directory>(inode_ptr(this), parent);
+           break;
+   }
+   DEBUGF ('i', "inode " << inode_nr << ", type = " << type);
+}
 int inode::get_inode_nr() const {
    DEBUGF ('i', "inode = " << inode_nr);
    return inode_nr;
-}
-
-file_base_ptr inode::get_contents(){
-    return contents;
 }
 
 plain_file_ptr plain_file_ptr_of (file_base_ptr ptr) {
@@ -73,16 +82,13 @@ void directory::remove (const string& filename) {
    DEBUGF ('i', filename);
 }
 
-inode_ptr directory::mkdir(const string& dirname) {
+inode_ptr directory::mkdir (const string& dirname) {
     DEBUGF ('i', dirname);
     if (dirents.find(dirname) != dirents.end())
         throw yshell_exn ("dirname exists");
-    inode_ptr parent = dirents["."];
-    inode_ptr dirnode = make_shared<inode>(DIR_INODE);
-    directory_ptr dir = directory_ptr_of(dirnode->get_contents());
-    dir->set_parent_child(parent, dirnode);
-    dirents.insert(make_pair(dirname, dirnode));
-    return dirnode;
+    inode_ptr me = dirents["."];
+    inode_ptr dir = make_shared<inode>(DIR_INODE, me);
+    return dir;
 }
 
 inode_ptr directory::mkfile (const string& filename) {
@@ -94,25 +100,11 @@ inode_ptr directory::mkfile (const string& filename) {
     return file;
 }
 
-void directory::set_root(inode_ptr root) {
-    dirents.insert(make_pair(".", root));
-    dirents.insert(make_pair("..", root));
-}
-
-void directory::set_parent_child(inode_ptr parent, inode_ptr child) {
-    dirents.insert(make_pair("..", parent));
-    dirents.insert(make_pair(".", child));
-}
-
 inode_state::inode_state() {
     root = make_shared<inode>(DIR_INODE);
-    cwd = root;
-    directory_ptr_of(root->contents)->set_root(root);
-   DEBUGF ('i', "root = " << root << ", cwd = " << cwd
+    DEBUGF ('i', "root = " << root << ", cwd = " << cwd
           << ", prompt = \"" << prompt << "\"");
 }
-
-
 
 ostream& operator<< (ostream& out, const inode_state& state) {
    out << "inode_state: root = " << state.root
@@ -120,7 +112,13 @@ ostream& operator<< (ostream& out, const inode_state& state) {
    return out;
 }
 
-ostream& operator<< (ostream& out, const directory& dir) {
-   out << dir.pwd(); 
-   return out;
+directory::directory(inode_ptr current_inode) {
+    dirents = map<string, inode_ptr>();
+    dirents.insert(make_pair(".", current_inode));
+    dirents.insert(make_pair("..", current_inode));
+}
+
+directory::directory(inode_ptr current_inode, inode_ptr parent_inode) {
+    dirents.insert(make_pair(".", current_inode));
+    dirents.insert(make_pair("..", parent_inode));
 }

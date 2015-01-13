@@ -12,6 +12,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <sstream>
 #include <vector>
 using namespace std;
 
@@ -87,7 +88,6 @@ wordvec split (const string& line, const string& delimiter);
 
 ostream& complain();
 
-
 //
 // operator<< (vector) -
 //    An overloaded template operator which allows vectors to be

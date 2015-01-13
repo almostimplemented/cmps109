@@ -45,7 +45,6 @@ class inode_state {
       string prompt {"% "};
    public:
       inode_state();
-      mkidr(const string& pathname);
 };
 
 //
@@ -72,8 +71,8 @@ class inode {
       file_base_ptr contents;
    public:
       inode (inode_t init_type);
+      inode (inode_t init_type, inode_ptr parent);
       int get_inode_nr() const;
-      file_base_ptr get_contents() const;
 };
 
 //
@@ -144,16 +143,13 @@ class plain_file: public file_base {
 class directory: public file_base {
    private:
       map<string,inode_ptr> dirents;
-      string name {"/"};
    public:
       size_t size() const override;
       void remove (const string& filename);
       inode_ptr mkdir (const string& dirname);
       inode_ptr mkfile (const string& filename);
-      void set_name(const string& dirname);
-      void set_root(inode_ptr root);
-      void set_parent_child(inode_ptr parent, inode_ptr child);
-      string get_name(void) const;
+      directory(inode_ptr current_inode);
+      directory(inode_ptr current_inode, inode_ptr parent_inode);
 };
 
 #endif
