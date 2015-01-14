@@ -75,6 +75,7 @@ int main (int argc, char** argv) {
             // function.  Complain or call it.
             wordvec words = split (line, " \t");
             DEBUGF ('y', "words = " << words);
+            if (words.size() == 0) continue;
             command_fn fn = cmdmap.at(words.at(0));
             fn (state, words);
          }catch (yshell_exn& exn) {
