@@ -45,7 +45,10 @@ class inode_state {
       string prompt {"% "};
    public:
       inode_state();
-      mkidr(const string& pathname);
+      inode_ptr resolve_pathname(const string& pathname);
+      void mkdir(const string& pathname);
+      vector<string> ls();
+      vector<string> ls(const string& pathname);
 };
 
 //
@@ -72,7 +75,9 @@ class inode {
       file_base_ptr contents;
    public:
       inode (inode_t init_type);
+      size_t size() const;
       int get_inode_nr() const;
+      int get_type() const;
       file_base_ptr get_contents() const;
 };
 
@@ -154,6 +159,8 @@ class directory: public file_base {
       void set_root(inode_ptr root);
       void set_parent_child(inode_ptr parent, inode_ptr child);
       string get_name(void) const;
+      inode_ptr lookup(const string& name);
+      vector<string> entries(void);
 };
 
 #endif

@@ -52,6 +52,16 @@ void fn_exit (inode_state& state, const wordvec& words){
 }
 
 void fn_ls (inode_state& state, const wordvec& words){
+    wordvec v;
+    if (words.size() == 1)
+        v = state.ls();
+    else if (words.size() == 2)
+        v = state.ls(words.at(1));
+    else
+        throw yshell_exn("usage: ls pathname");
+    for (string item : v) {
+        cout << item << endl;
+    }
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
