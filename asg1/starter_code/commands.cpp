@@ -29,11 +29,23 @@ command_fn commands::at (const string& cmd) {
 }
 
 void fn_cat (inode_state& state, const wordvec& words){
+    if (words.size() < 2) {
+        throw yshell_exn ("cat: must specify file"); 
+    }
+    for (size_t i = 1; i < words.size(); i++) {
+        state.cat(words.at(i), cout);
+    }
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
 
 void fn_cd (inode_state& state, const wordvec& words){
+    if (words.size() == 1)
+        state.cd();
+    else if (words.size() == 2)
+        state.cd(words.at(1));
+    else
+        throw yshell_exn ("cd: only one operand may be given");
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
@@ -52,16 +64,12 @@ void fn_exit (inode_state& state, const wordvec& words){
 }
 
 void fn_ls (inode_state& state, const wordvec& words){
-    wordvec v;
     if (words.size() == 1)
-        v = state.ls();
+        state.ls(cout);
     else if (words.size() == 2)
-        v = state.ls(words.at(1));
+        state.ls(words.at(1), cout);
     else
         throw yshell_exn("usage: ls pathname");
-    for (string item : v) {
-        cout << item << endl;
-    }
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
@@ -72,6 +80,16 @@ void fn_lsr (inode_state& state, const wordvec& words){
 }
 
 void fn_make (inode_state& state, const wordvec& words){
+    if (words.at(1).back() == '/')
+        throw yshell_exn("make: " +words.at(1)+ ": invalid filename");
+    if (words.size() == 2)
+        state.make(words.at(1));
+    else if (words.size() > 2) {
+        wordvec args(words.begin() + 2, words.end());
+        state.make(words.at(1), args);
+    } else {
+        throw yshell_exn("make: must specify filename");
+    }
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }

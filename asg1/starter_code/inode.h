@@ -46,9 +46,14 @@ class inode_state {
    public:
       inode_state();
       inode_ptr resolve_pathname(const string& pathname);
+      void cat(const string& pathname, ostream& out);
+      void cd();
+      void cd(const string& pathname);
+      void ls(ostream& out);
+      void ls(const string& pathname, ostream& out);
+      void make(const string& pathname);
+      void make(const string& pathname, wordvec& data);
       void mkdir(const string& pathname);
-      vector<string> ls();
-      vector<string> ls(const string& pathname);
 };
 
 //
@@ -149,18 +154,19 @@ class plain_file: public file_base {
 class directory: public file_base {
    private:
       map<string,inode_ptr> dirents;
-      string name {"/"};
    public:
-      size_t size() const override;
-      void remove (const string& filename);
-      inode_ptr mkdir (const string& dirname);
-      inode_ptr mkfile (const string& filename);
       void set_name(const string& dirname);
       void set_root(inode_ptr root);
       void set_parent_child(inode_ptr parent, inode_ptr child);
-      string get_name(void) const;
+      void remove (const string& filename);
+      size_t size() const override;
+      inode_ptr mkdir (const string& dirname);
+      inode_ptr mkfile (const string& filename);
       inode_ptr lookup(const string& name);
-      vector<string> entries(void);
+      const wordvec& cat(const string& name, const string& pathname);
+      void ls(ostream& out);
+      void make(const string& pathname);
+      void make(const string& pathname, wordvec& data);
 };
 
 #endif

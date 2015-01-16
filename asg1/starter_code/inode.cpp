@@ -1,7 +1,9 @@
 // $Id: inode.cpp,v 1.12 2014-07-03 13:29:57-07 - - $
 
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
+#include <iomanip>
 
 using namespace std;
 
@@ -59,6 +61,12 @@ directory_ptr directory_ptr_of (file_base_ptr ptr) {
 size_t plain_file::size() const {
    size_t size {0};
    size = data.size();
+   for (auto word = data.begin();
+             word != data.end();
+             word++) {
+      size += word->size();
+   }
+   if (size > 1) size -= 1;
    DEBUGF ('i', "size = " << size);
    return size;
 }
@@ -87,7 +95,7 @@ void directory::remove (const string& filename) {
 inode_ptr directory::mkdir(const string& dirname) {
     DEBUGF ('i', dirname);
     if (dirents.find(dirname) != dirents.end())
-        throw yshell_exn ("dirname exists");
+        throw yshell_exn ("mkdir: " + dirname + ": dirname exists");
     inode_ptr parent = dirents["."];
     inode_ptr dirnode = make_shared<inode>(DIR_INODE);
     directory_ptr dir = directory_ptr_of(dirnode->get_contents());
@@ -99,7 +107,7 @@ inode_ptr directory::mkdir(const string& dirname) {
 inode_ptr directory::mkfile (const string& filename) {
     DEBUGF ('i', filename);
     if (dirents.find(filename) != dirents.end())
-        throw yshell_exn ("filename exists");
+        throw logic_error ("filename exists");
     inode_ptr file = make_shared<inode>(PLAIN_INODE);
     dirents.insert(make_pair(filename, file));
     return file;
@@ -118,21 +126,64 @@ void directory::set_parent_child(inode_ptr parent, inode_ptr child) {
 inode_ptr directory::lookup(const string& name) {
     auto it = dirents.find(name);
     if (it == dirents.end())
-        throw yshell_exn("directory or filename \"" + 
-                name + "\" does not exist");
+        return nullptr;
     return it->second;
 }
 
-vector<string> directory::entries() {
-    vector<string> v;
+void directory::ls(ostream& out) {
+    string suffix;
     for (auto it = dirents.begin();
-            it != dirents.end();
-            it++) {
-        v.push_back(to_string(it->second->get_inode_nr()) + "\t" +
-         to_string(it->second->size())
-          + "\t" + it->first);
+              it != dirents.end();
+              it++) {
+        if (it->second->get_type() == DIR_INODE
+            && it->first != "."
+            && it->first != "..")
+            suffix = "/";
+        else
+            suffix = "";
+        out << setw(6) << it->second->get_inode_nr()
+            << setw(6) << it->second->size()
+            << "\t" << it->first + suffix << endl;
     }
-    return v;
+}
+
+const wordvec& directory::cat(const string& name,
+                              const string& pathname) {
+    auto it = dirents.find(name);
+    if (it == dirents.end()) {
+        throw yshell_exn ("cat: " + pathname + ": No such file");
+    } else {
+        plain_file_ptr fp = plain_file_ptr_of(
+                                it->second->get_contents());
+        return fp->readfile();
+    }
+}
+
+void directory::make(const string& name) {
+    inode_ptr np;
+    auto it = dirents.find(name);
+    if (it == dirents.end()) {
+        mkfile(name);
+    } else {
+        wordvec v;
+        plain_file_ptr fp = plain_file_ptr_of(
+                                it->second->get_contents());
+        fp->writefile(v);
+    }
+}
+
+void directory::make(const string& name, wordvec& data) {
+    inode_ptr np;
+    auto it = dirents.find(name);
+    if (it == dirents.end()) {
+        np = mkfile(name);
+        plain_file_ptr fp = plain_file_ptr_of(np->get_contents());
+        fp->writefile(data);
+    } else {
+        plain_file_ptr fp = plain_file_ptr_of(
+                                it->second->get_contents());
+        fp->writefile(data);
+    }
 }
 
 inode_state::inode_state() {
@@ -163,9 +214,27 @@ inode_ptr inode_state::resolve_pathname(const string& pathname) {
         }
         dir = directory_ptr_of(p->get_contents());
         p = dir->lookup(pathname.substr(from, found - from));
+        if (p == nullptr)
+            return p;
         from = found + 1;
     }
     return p;
+}
+
+void inode_state::cd() {
+    cwd = root;
+}
+
+void inode_state::cd(const string& pathname) {
+    inode_ptr p;
+    if (pathname.back() != '/')
+        p = resolve_pathname(pathname + '/');
+    else
+        p = resolve_pathname(pathname);
+    if (p == nullptr)
+        throw yshell_exn("cd: " + pathname +
+                         "No such directory");
+    cwd = p;
 }
 
 void inode_state::mkdir(const string& pathname) {
@@ -178,20 +247,23 @@ void inode_state::mkdir(const string& pathname) {
         dir->mkdir(pathname.substr(found+1));
 }
 
-vector<string> inode_state::ls() {
-    vector<string> v;
+void inode_state::ls(ostream& out) {
+    out << ".:" << endl;
     directory_ptr dir = directory_ptr_of(cwd->contents);
-    return dir->entries();
+    dir->ls(out);
 }
 
-vector<string> inode_state::ls(const string& pathname) {
+void inode_state::ls(const string& pathname, ostream& out) {
     inode_ptr p = resolve_pathname(pathname);
-    vector<string> v;
+    if (p == nullptr)
+        throw yshell_exn ("ls: " + pathname +
+                         ": No such file or directory");
+    out << pathname << ":" << endl;
     if (p->get_type() == PLAIN_INODE) {
-        v.push_back(to_string(p->get_inode_nr()) + "\t" +
-                    to_string(p->size())         + "\t" +
-                    pathname);
-        return v;
+        out << setw(6) << p->get_inode_nr()
+            << setw(6) << p->size()
+            << "\t" << pathname << endl;
+        return;
     }
     directory_ptr dir = directory_ptr_of(p->contents);
     if (pathname.back() != '/') {
@@ -200,9 +272,48 @@ vector<string> inode_state::ls(const string& pathname) {
             p = dir->lookup(pathname);
         else
             p = dir->lookup(pathname.substr(found+1));
+        if (p == nullptr) {
+            throw yshell_exn ("ls: " + pathname +
+                             ": No such file or directory");
+        }
         dir = directory_ptr_of(p->contents);
     }
-    return dir->entries();
+    return dir->ls(out);
+}
+
+void inode_state::cat(const string& pathname, ostream& out) {
+    inode_ptr p = resolve_pathname(pathname);
+    string name;
+    size_t found = pathname.find_last_of("/");
+    if (found == string::npos)
+        name = pathname;
+    else
+        name = pathname.substr(found + 1);
+    wordvec data = directory_ptr_of(p->contents)->cat(name, pathname);
+    if (data.size() > 0)
+        out << data << endl;
+}
+
+void inode_state::make(const string& pathname) {
+    inode_ptr p = resolve_pathname(pathname);
+    string name;
+    size_t found = pathname.find_last_of("/");
+    if (found == string::npos)
+        name = pathname;
+    else
+        name = pathname.substr(found + 1);
+    directory_ptr_of(p->contents)->make(name);
+}
+
+void inode_state::make(const string& pathname, wordvec& data) {
+    inode_ptr p = resolve_pathname(pathname);
+    string name;
+    size_t found = pathname.find_last_of("/");
+    if (found == string::npos)
+        name = pathname;
+    else
+        name = pathname.substr(found + 1);
+    directory_ptr_of(p->contents)->make(name, data);
 }
 
 ostream& operator<< (ostream& out, const inode_state& state) {
