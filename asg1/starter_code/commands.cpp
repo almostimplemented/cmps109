@@ -66,10 +66,9 @@ void fn_exit (inode_state& state, const wordvec& words){
 void fn_ls (inode_state& state, const wordvec& words){
     if (words.size() == 1)
         state.ls(cout);
-    else if (words.size() == 2)
-        state.ls(words.at(1), cout);
     else
-        throw yshell_exn("usage: ls pathname");
+        for (size_t i = 1; i < words.size(); i++)
+            state.ls(words.at(i), cout);
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
@@ -108,6 +107,7 @@ void fn_prompt (inode_state& state, const wordvec& words){
 }
 
 void fn_pwd (inode_state& state, const wordvec& words){
+    state.pwd(cout);
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }

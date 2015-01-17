@@ -54,6 +54,7 @@ class inode_state {
       void make(const string& pathname);
       void make(const string& pathname, wordvec& data);
       void mkdir(const string& pathname);
+      void pwd(ostream& out);
 };
 
 //
@@ -78,9 +79,11 @@ class inode {
       int inode_nr;
       inode_t type;
       file_base_ptr contents;
+      string name;
    public:
       inode (inode_t init_type);
       size_t size() const;
+      void set_name(const string& iname);
       int get_inode_nr() const;
       int get_type() const;
       file_base_ptr get_contents() const;

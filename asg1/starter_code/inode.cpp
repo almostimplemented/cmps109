@@ -46,6 +46,10 @@ size_t inode::size() const {
         return directory_ptr_of(contents)->size();
 }
 
+void inode::set_name(const string& iname) {
+    name = iname;
+}
+
 plain_file_ptr plain_file_ptr_of (file_base_ptr ptr) {
    plain_file_ptr pfptr = dynamic_pointer_cast<plain_file> (ptr);
    if (pfptr == nullptr) throw invalid_argument ("plain_file_ptr_of");
@@ -98,6 +102,7 @@ inode_ptr directory::mkdir(const string& dirname) {
         throw yshell_exn ("mkdir: " + dirname + ": dirname exists");
     inode_ptr parent = dirents["."];
     inode_ptr dirnode = make_shared<inode>(DIR_INODE);
+    dirnode->set_name(dirname);
     directory_ptr dir = directory_ptr_of(dirnode->get_contents());
     dir->set_parent_child(parent, dirnode);
     dirents.insert(make_pair(dirname, dirnode));
@@ -116,6 +121,7 @@ inode_ptr directory::mkfile (const string& filename) {
 void directory::set_root(inode_ptr root) {
     dirents.insert(make_pair(".", root));
     dirents.insert(make_pair("..", root));
+    root->set_name("/");
 }
 
 void directory::set_parent_child(inode_ptr parent, inode_ptr child) {
@@ -221,6 +227,19 @@ inode_ptr inode_state::resolve_pathname(const string& pathname) {
     return p;
 }
 
+void inode_state::cat(const string& pathname, ostream& out) {
+    inode_ptr p = resolve_pathname(pathname);
+    string name;
+    size_t found = pathname.find_last_of("/");
+    if (found == string::npos)
+        name = pathname;
+    else
+        name = pathname.substr(found + 1);
+    wordvec data = directory_ptr_of(p->contents)->cat(name, pathname);
+    if (data.size() > 0)
+        out << data << endl;
+}
+
 void inode_state::cd() {
     cwd = root;
 }
@@ -235,16 +254,6 @@ void inode_state::cd(const string& pathname) {
         throw yshell_exn("cd: " + pathname +
                          "No such directory");
     cwd = p;
-}
-
-void inode_state::mkdir(const string& pathname) {
-    inode_ptr p = resolve_pathname(pathname);
-    directory_ptr dir = directory_ptr_of(p->get_contents());
-    size_t found = pathname.find_last_of("/");
-    if (found == string::npos)
-        dir->mkdir(pathname);
-    else
-        dir->mkdir(pathname.substr(found+1));
 }
 
 void inode_state::ls(ostream& out) {
@@ -281,19 +290,6 @@ void inode_state::ls(const string& pathname, ostream& out) {
     return dir->ls(out);
 }
 
-void inode_state::cat(const string& pathname, ostream& out) {
-    inode_ptr p = resolve_pathname(pathname);
-    string name;
-    size_t found = pathname.find_last_of("/");
-    if (found == string::npos)
-        name = pathname;
-    else
-        name = pathname.substr(found + 1);
-    wordvec data = directory_ptr_of(p->contents)->cat(name, pathname);
-    if (data.size() > 0)
-        out << data << endl;
-}
-
 void inode_state::make(const string& pathname) {
     inode_ptr p = resolve_pathname(pathname);
     string name;
@@ -314,6 +310,42 @@ void inode_state::make(const string& pathname, wordvec& data) {
     else
         name = pathname.substr(found + 1);
     directory_ptr_of(p->contents)->make(name, data);
+}
+
+void inode_state::mkdir(const string& pathname) {
+    string name;
+    if (pathname.back() == '/')
+        name = pathname.substr(0, pathname.size() - 1);
+    else 
+        name = pathname;
+    inode_ptr p = resolve_pathname(name);
+    directory_ptr dir = directory_ptr_of(p->get_contents());
+    size_t found = name.find_last_of("/");
+    if (found == string::npos)
+        dir->mkdir(name);
+    else
+        dir->mkdir(name.substr(found+1));
+}
+
+void inode_state::pwd(ostream& out) {
+    wordvec name_stack;
+    inode_ptr p = cwd;
+    directory_ptr dp;
+    while (p != root) {
+        name_stack.push_back(p->name);
+        dp = directory_ptr_of(p->contents);
+        p  = dp->lookup("..");
+    }
+    if (name_stack.size() == 0) {
+        out << '/' << endl;
+        return;
+    }
+    while (name_stack.size() > 0) {
+        out << '/';
+        out << name_stack.back();
+        name_stack.pop_back();
+    }
+    out << endl;
 }
 
 ostream& operator<< (ostream& out, const inode_state& state) {
