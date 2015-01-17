@@ -46,6 +46,8 @@ class inode_state {
    public:
       inode_state();
       inode_ptr resolve_pathname(const string& pathname);
+      void set_prompt(const wordvec& words);
+      string get_prompt() const;
       void cat(const string& pathname, ostream& out);
       void cd();
       void cd(const string& pathname);

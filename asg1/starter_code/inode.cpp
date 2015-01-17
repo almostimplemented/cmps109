@@ -327,6 +327,22 @@ void inode_state::mkdir(const string& pathname) {
         dir->mkdir(name.substr(found+1));
 }
 
+string inode_state::get_prompt () const {
+    return prompt;
+}
+
+void inode_state::set_prompt(const wordvec& words) {
+    if (words.size() == 1)
+        prompt = "% ";
+    else {
+        prompt = "";
+        for (size_t i = 1;
+                i < words.size();
+                i++)
+            prompt += words.at(i) + " ";
+    }
+}
+
 void inode_state::pwd(ostream& out) {
     wordvec name_stack;
     inode_ptr p = cwd;
