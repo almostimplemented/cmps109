@@ -46,6 +46,15 @@ ${DEPFILE} : ${MKFILE}
 	@ touch ${DEPFILE}
 	${GMAKE} dep
 
+#
+# Subimt
+#
+
+submit :
+	submit cmps109-wm.w15 asg1 ${ALLSOURCES}
+	mkdir -p latest_submit
+	cp ${ALLSOURCES} latest_submit
+
 again :
 	${GMAKE} spotless dep ci all lis
 
