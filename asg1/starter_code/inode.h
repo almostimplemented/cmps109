@@ -53,10 +53,14 @@ class inode_state {
       void cd(const string& pathname);
       void ls(ostream& out);
       void ls(const string& pathname, ostream& out);
+      void lsr(ostream& out);
+      void lsr(const string& pathname, ostream& out);
       void make(const string& pathname);
       void make(const string& pathname, wordvec& data);
       void mkdir(const string& pathname);
       void pwd(ostream& out);
+      void rm(const string& pathname);
+      void rmr(const string& pathname);
 };
 
 //
@@ -86,6 +90,7 @@ class inode {
       inode (inode_t init_type);
       size_t size() const;
       void set_name(const string& iname);
+      string get_name() const;
       int get_inode_nr() const;
       int get_type() const;
       file_base_ptr get_contents() const;
@@ -160,18 +165,20 @@ class directory: public file_base {
    private:
       map<string,inode_ptr> dirents;
    public:
-      void set_name(const string& dirname);
       void set_root(inode_ptr root);
       void set_parent_child(inode_ptr parent, inode_ptr child);
-      void remove (const string& filename);
+      void remove   (const string& filename, const string& pathname);
+      void remove_r (const string& filename, const string& pathname);
       size_t size() const override;
       inode_ptr mkdir (const string& dirname);
       inode_ptr mkfile (const string& filename);
       inode_ptr lookup(const string& name);
       const wordvec& cat(const string& name, const string& pathname);
       void ls(ostream& out);
-      void make(const string& pathname);
-      void make(const string& pathname, wordvec& data);
+      void make(const string& name, const string& pathname);
+      void make(const string& name, 
+                const string& pathname, wordvec& data);
+      vector<inode_ptr> subdirs();
 };
 
 #endif

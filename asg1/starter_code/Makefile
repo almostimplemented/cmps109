@@ -1,4 +1,7 @@
-# $Id: Makefile,v 1.14 2014-06-25 17:42:27-07 - - $
+# Author: Andrew Edwards
+# Email:  ancedwar@ucsc.edu
+# ID:	  1253060
+# Date:	  2015 Jan 18
 
 MKFILE      = Makefile
 DEPFILE     = ${MKFILE}.dep
@@ -15,7 +18,6 @@ EXECBIN     = yshell
 OBJECTS     = ${CPPSOURCE:.cpp=.o}
 OTHERS      = ${MKFILE} README
 ALLSOURCES  = ${CPPHEADER} ${CPPSOURCE} ${OTHERS}
-LISTING     = Listing.ps
 
 all : ${EXECBIN}
 	- checksource ${ALLSOURCES}
@@ -30,14 +32,11 @@ ci : ${ALLSOURCES}
 	cid + ${ALLSOURCES}
 	- checksource ${ALLSOURCES}
 
-lis : ${ALLSOURCES}
-	mkpspdf ${LISTING} ${ALLSOURCES} ${DEPFILE}
-
 clean :
-	- rm ${OBJECTS} ${DEPFILE} core ${EXECBIN}.errs
+	- rm ${OBJECTS} ${DEPFILE}
 
 spotless : clean
-	- rm ${EXECBIN} ${LISTING} ${LISTING:.ps=.pdf}
+	- rm ${EXECBIN}
 
 dep : ${CPPSOURCE} ${CPPHEADER}
 	@ echo "# ${DEPFILE} created `LC_TIME=C date`" >${DEPFILE}

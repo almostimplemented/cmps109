@@ -28,8 +28,8 @@ using wordvec = vector<string>;
 //
 
 class yshell_exn: public runtime_error {
-   public:
-      explicit yshell_exn (const string& what);
+    public:
+        explicit yshell_exn (const string& what);
 };
 
 //
@@ -62,11 +62,11 @@ bool want_echo();
 //
 
 class exit_status {
-   private:
-      static int status;
-   public:
-      static void set (int);
-      static int get();
+    private:
+        static int status;
+    public:
+        static void set (int);
+        static int get();
 };
 
 //
@@ -98,12 +98,12 @@ ostream& complain();
 
 template <typename item_t>
 ostream& operator<< (ostream& out, const vector<item_t>& vec) {
-   string space = "";
-   for (const auto& item: vec) {
-      out << space << item;
-      space = " ";
-   }
-   return out;
+    string space = "";
+    for (const auto& item: vec) {
+        out << space << item;
+        space = " ";
+    }
+    return out;
 }
 
 #endif
