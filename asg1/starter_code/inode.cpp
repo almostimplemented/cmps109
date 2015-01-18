@@ -1,4 +1,7 @@
-// $Id: inode.cpp,v 1.12 2014-07-03 13:29:57-07 - - $
+// Author:  Andrew Edwards
+// Email:   ancedwar@ucsc.edu
+// ID:      1253060
+// Date:    2015 Jan 18
 
 #include <iostream>
 #include <sstream>

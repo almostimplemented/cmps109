@@ -1,4 +1,7 @@
-// $Id: main.cpp,v 1.3 2014-06-11 13:52:31-07 - - $
+// Author:  Andrew Edwards
+// Email:   ancedwar@ucsc.edu
+// ID:      1253060
+// Date:    2015 Jan 18
 
 #include <cstdlib>
 #include <iostream>

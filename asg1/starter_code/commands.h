@@ -1,4 +1,7 @@
-// $Id: commands.h,v 1.8 2014-06-11 13:49:31-07 - - $
+// Author:  Andrew Edwards
+// Email:   ancedwar@ucsc.edu
+// ID:      1253060
+// Date:    2015 Jan 18
 
 #ifndef __COMMANDS_H__
 #define __COMMANDS_H__

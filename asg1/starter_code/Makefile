@@ -33,7 +33,7 @@ ci : ${ALLSOURCES}
 	- checksource ${ALLSOURCES}
 
 clean :
-	- rm ${OBJECTS} ${DEPFILE}
+	- rm ${OBJECTS} ${DEPFILE} *.ysh.err *.ysh.out *.ysh.status
 
 spotless : clean
 	- rm ${EXECBIN}

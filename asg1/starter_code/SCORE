@@ -1,36 +1,4 @@
-head	1.3;
-access;
-symbols;
-locks;
-comment	@# @;
-
-
-1.3
-date	2014.06.18.03.27.18;	author -;	state -;
-branches;
-next	1.2;
-
-1.2
-date	2013.01.03.03.13.19;	author -;	state -;
-branches;
-next	1.1;
-
-1.1
-date	2013.01.03.03.11.43;	author -;	state -;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.3
-log
-@-
-@
-text
-@$Id: SCORE,v 1.2 2013-01-02 19:13:19-08 - - $
+$Id: SCORE,v 1.3 2014-06-17 20:27:18-07 - - $
 
 Copy all of the files in this directory into the student's
 directory.  For each point deduction, give a reason.  Numbers in
@@ -123,37 +91,3 @@ If not, TOTALSCORE = SUBTOTAL.
 TOTALSCORE=
 min 1, max 60
 
-@
-
-
-1.2
-log
-@-
-@
-text
-@d1 1
-a1 1
-$Id: SCORE,v 1.1 2013-01-02 19:11:43-08 - - $
-d54 2
-a55 2
-         G++ -o yshell *.cc >compile.log 2>&1
-         G++ -o yshell *.cpp >compile.log 2>&1
-a79 5
-     [Although memory leak is a serious problem, for this program,
-      no points will be deducted if memory leak occurs, and the
-      test data does not test for memory leak.  Enterprising students
-      might have used valgrind to check for memory leak.]
-
-@
-
-
-1.1
-log
-@-
-@
-text
-@d1 1
-a1 1
-$Id: SCORE,v 1.2 2012-03-29 21:37:06-07 - - $
-d80 5
-@

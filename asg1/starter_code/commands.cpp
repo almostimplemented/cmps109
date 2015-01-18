@@ -1,4 +1,7 @@
-// $Id: commands.cpp,v 1.11 2014-06-11 13:49:31-07 - - $
+// Author:  Andrew Edwards
+// Email:   ancedwar@ucsc.edu
+// ID:      1253060
+// Date:    2015 Jan 18
 
 #include "commands.h"
 #include "debug.h"
@@ -78,9 +81,7 @@ void fn_exit (inode_state& state, const wordvec& words){
         }
     } else if (words.size() > 2) {
         throw yshell_exn("exit: usage: exit [status]");
-    } else {
-        exit_status::set(0);
-    }
+    } 
     DEBUGF ('c', state);
     DEBUGF ('c', words);
     throw ysh_exit_exn();

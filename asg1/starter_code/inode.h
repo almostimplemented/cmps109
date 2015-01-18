@@ -1,4 +1,7 @@
-// $Id: inode.h,v 1.13 2014-06-12 18:10:25-07 - - $
+// Author:  Andrew Edwards
+// Email:   ancedwar@ucsc.edu
+// ID:      1253060
+// Date:    2015 Jan 18
 
 #ifndef __INODE_H__
 #define __INODE_H__

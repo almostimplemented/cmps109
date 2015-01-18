@@ -1,26 +1,4 @@
-head	1.1;
-access;
-symbols;
-locks;
-comment	@# @;
-
-
-1.1
-date	2013.01.03.03.11.43;	author -;	state -;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@-
-@
-text
-@mkdir foo
+mkdir foo
 mkdir foo/bar
 mkdir foo/bar/baz
 make foo/bar/baz/file with this
@@ -37,5 +15,4 @@ lsr foo foo/bar
 rmr foo
 lsr /
 # This tests decoding pathnames
-# $Id: test4.ysh,v 1.1 2010-12-13 20:21:17-08 - - $
-@
+# $Id: test4.ysh,v 1.1 2013-01-02 19:11:43-08 - - $

@@ -1,2 +1,0 @@
-yshell: mkdir: this/mkdir/should/error/out: invalid path
-yshell: make: foo/bar: filename exists as directory

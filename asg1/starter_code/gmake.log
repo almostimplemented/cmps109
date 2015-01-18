@@ -1,0 +1,10 @@
+Makefile:53: Makefile.dep: No such file or directory
+gmake --no-print-directory dep
+g++ -MM commands.cpp debug.cpp inode.cpp util.cpp main.cpp >>Makefile.dep
+g++ -g -O0 -Wall -Wextra -rdynamic -std=gnu++11 -c commands.cpp
+g++ -g -O0 -Wall -Wextra -rdynamic -std=gnu++11 -c debug.cpp
+g++ -g -O0 -Wall -Wextra -rdynamic -std=gnu++11 -c inode.cpp
+g++ -g -O0 -Wall -Wextra -rdynamic -std=gnu++11 -c util.cpp
+g++ -g -O0 -Wall -Wextra -rdynamic -std=gnu++11 -c main.cpp
+g++ -g -O0 -Wall -Wextra -rdynamic -std=gnu++11 -o yshell commands.o debug.o inode.o util.o main.o
+checksource commands.h debug.h inode.h util.h commands.cpp debug.cpp inode.cpp util.cpp main.cpp Makefile README
