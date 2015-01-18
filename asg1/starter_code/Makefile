@@ -8,6 +8,7 @@ DEPFILE     = ${MKFILE}.dep
 NOINCL      = ci clean spotless
 NEEDINCL    = ${filter ${NOINCL}, ${MAKECMDGOALS}}
 GMAKE       = ${MAKE} --no-print-directory
+VALGRIND    = valgrind --leak-check=full --show-reachable=yes
 
 COMPILECPP  = g++ -g -O0 -Wall -Wextra -rdynamic -std=gnu++11
 MAKEDEPCPP  = g++ -MM

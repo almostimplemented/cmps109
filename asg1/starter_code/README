@@ -1,1 +1,29 @@
-$Id: README,v 1.1 2013-06-18 17:32:08-07 - - $
+Author:  Andrew Edwards
+Email:   ancedwar@ucsc.edu
+ID:      1253060
+Date:    2015 Jan 18
+
+
+Assignment 1, Advanced Programming
+
+This assignment emulates the unix shell. Users
+can create text files and directories and get
+information on the current state of the shell.
+
+The available commands are:
+    cat pathname...             File contents displayed
+    cd [pathname]               Change working directory
+    echo [words...]             Output the input
+    exit [status]               Exit with given status, 0 by default
+    ls [pathname...]            Describe files and directories
+    lsr [pathname...]           As above, but recursive
+    make pathname [words...]    Create a file, optionally with words as
+                                data
+    mkdir pathname              Create a directory
+    prompt string               Change the shell's prompt
+    pwd                         Print the full path from the root to
+                                the current working directory
+    rm pathname                 Removes file or directory at pathname,
+                                though directories must be empty
+    rmr pathname                As above, but recursive (directories
+                                need not be empty).
