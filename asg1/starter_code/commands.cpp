@@ -63,6 +63,7 @@ void fn_echo (inode_state& state, const wordvec& words){
 
 void fn_exit (inode_state& state, const wordvec& words){
     int x;
+    state.terminate();
     if (words.size() == 2) {
         try {
             x = stoi(words.at(1));

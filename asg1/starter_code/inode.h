@@ -64,6 +64,7 @@ class inode_state {
       void pwd(ostream& out);
       void rm(const string& pathname);
       void rmr(const string& pathname);
+      void terminate();
 };
 
 //
@@ -172,6 +173,7 @@ class directory: public file_base {
       void set_parent_child(inode_ptr parent, inode_ptr child);
       void remove   (const string& filename, const string& pathname);
       void remove_r (const string& filename, const string& pathname);
+      void rec_empty();
       size_t size() const override;
       inode_ptr mkdir (const string& dirname);
       inode_ptr mkfile (const string& filename);

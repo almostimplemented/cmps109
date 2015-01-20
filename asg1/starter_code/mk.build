@@ -3,6 +3,5 @@
 # Checksource and do the build.
 PATH=$PATH:/afs/cats.ucsc.edu/courses/cmps012b-wm/bin/
 export PATH
-partnercheck 2>&1 | tee partnercheck.log
 checksource Makefile README* *.h *.cc *.cpp >checksource.log 2>&1
-gmake >gmake.log 2>&1
+make >make.log 2>&1

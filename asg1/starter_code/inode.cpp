@@ -121,20 +121,43 @@ void directory::remove (const string& filename,
 void directory::remove_r (const string& filename,
                           const string& pathname) {
     auto it = dirents.find(filename);
+    directory_ptr dp; 
     if (it == dirents.end())
         throw yshell_exn ("rmr: " + pathname 
                                   + ": no such directory");
-    inode_ptr p = it->second;
-    directory_ptr dp = directory_ptr_of(p->get_contents()); 
-    dirents.erase(it);
+    dp = directory_ptr_of(it->second->get_contents());
+    dp->rec_empty();
+    dirents.erase(it->first);
    DEBUGF ('i', filename);
+}
+
+void directory::rec_empty() {
+    inode_ptr p;
+    directory_ptr dp;
+    for (auto it =  dirents.begin();
+              it != dirents.end();
+              ) {
+        p = it->second;
+        DEBUGF ('i', it->first);
+        if (it->first == "." || it->first == "..") {
+            dirents.erase(it++);
+            continue;
+        }
+        if (p->get_type() == PLAIN_INODE)
+            dirents.erase(it++);
+        else {
+            dp = directory_ptr_of(p->get_contents());
+            dp->rec_empty();
+            dirents.erase(it++);
+        }
+    }
 }
 
 vector<inode_ptr> directory::subdirs() {
     vector<inode_ptr> subdirs;
     for (auto it = dirents.begin();
               it != dirents.end();
-              it++) {
+              ++it) {
         if (it->second->get_type() == DIR_INODE
             && it->first != "."
             && it->first != "..")
@@ -511,6 +534,11 @@ void inode_state::rmr(const string& pathname) {
     if (p->type == PLAIN_INODE)
         throw yshell_exn ("rm: " + pathname + ": is not a directory");
     dir->remove_r(target_name, pathname);
+}
+
+void inode_state::terminate() {
+    directory_ptr dp = directory_ptr_of(root->contents);
+    dp->rec_empty();
 }
 
 ostream& operator<< (ostream& out, const inode_state& state) {
