@@ -529,10 +529,10 @@ void inode_state::rmr(const string& pathname) {
     directory_ptr dir = directory_ptr_of(p->contents);
     p = dir->lookup(target_name);
     if (p == nullptr)
-        throw yshell_exn ("rm: " + pathname 
+        throw yshell_exn ("rmr: " + pathname 
                 + ": No such file or directory");
     if (p->type == PLAIN_INODE)
-        throw yshell_exn ("rm: " + pathname + ": is not a directory");
+        throw yshell_exn ("rmr: " + pathname + ": is not a directory");
     dir->remove_r(target_name, pathname);
 }
 

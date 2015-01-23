@@ -53,7 +53,8 @@ ${DEPFILE} : ${MKFILE}
 
 submit :
 	submit cmps109-wm.w15 asg1 ${ALLSOURCES}
-	mkdir -p latest_submit
+	rm -r latest_submit
+	mkdir latest_submit
 	cp ${ALLSOURCES} latest_submit
 
 again :
