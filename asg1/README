@@ -5,10 +5,10 @@ Date:    2015 Jan 18
 
 
 Assignment 1, Advanced Programming
+Unix Shell Emulation
 
-This assignment emulates the unix shell. Users
-can create text files and directories and get
-information on the current state of the shell.
+This assignment emulates the unix shell. Users can create text files and
+directories and get information on the current state of the shell.
 
 The available commands are:
     cat pathname...             File contents displayed
