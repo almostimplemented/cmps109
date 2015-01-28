@@ -9,58 +9,66 @@
 using namespace std;
 
 #include "debug.h"
+using digit_t = unsigned char;
+using bigvalue_t = vector<digit_t>;
 
 //
 // Define class bigint
 //
 class bigint {
-      friend ostream& operator<< (ostream&, const bigint&);
-   private:
-      long long_value {};
-      using quot_rem = pair<bigint,bigint>;
-      using unumber = unsigned long;
-      friend quot_rem divide (const bigint&, const bigint&);
-      friend void multiply_by_2 (unumber&);
-      friend void divide_by_2 (unumber&);
-   public:
+    friend ostream& operator<< (ostream&, const bigint&);
+  private:
+    long long_value {};
+    bool negative;
+    bigvalue_t big_value;
+    static bigvalue_t do_bigadd (const bigvalue_t&, const bigvalue_t&);
+    static bigvalue_t do_bigsub (const bigvalue_t&, const bigvalue_t&);
+    static bool do_bigless (const bigvalue_t&, const bigvalue_t&);
+    using quot_rem = pair<bigint,bigint>;
+    using unumber = unsigned long;
+    friend quot_rem divide (const bigint&, const bigint&);
+    friend void multiply_by_2 (unumber&);
+    friend void divide_by_2 (unumber&);
+  public:
 
-      //
-      // Ensure synthesized members are genrated.
-      //
-      bigint() = default;
-      bigint (const bigint&) = default;
-      bigint (bigint&&) = default;
-      bigint& operator= (const bigint&) = default;
-      bigint& operator= (bigint&&) = default;
-      ~bigint() = default;
+    //
+    // Ensure synthesized members are genrated.
+    //
+    bigint() = default;
+    bigint (const bigint&) = default;
+    bigint (bigint&&) = default;
+    bigint& operator= (const bigint&) = default;
+    bigint& operator= (bigint&&) = default;
+    ~bigint() = default;
 
-      //
-      // Extra ctors to make bigints.
-      //
-      bigint (const long);
-      bigint (const string&);
+    //
+    // Extra ctors to make bigints.
+    //
+    bigint (const bigvalue_t&);
+    bigint (const long);
+    bigint (const string&);
 
-      //
-      // Basic add/sub operators.
-      //
-      friend bigint operator+ (const bigint&, const bigint&);
-      friend bigint operator- (const bigint&, const bigint&);
-      friend bigint operator+ (const bigint&);
-      friend bigint operator- (const bigint&);
-      long to_long() const;
+    //
+    // Basic add/sub operators.
+    //
+    friend bigint operator+ (const bigint&, const bigint&);
+    friend bigint operator- (const bigint&, const bigint&);
+    friend bigint operator+ (const bigint&);
+    friend bigint operator- (const bigint&);
+    long to_long() const;
 
-      //
-      // Extended operators implemented with add/sub.
-      //
-      friend bigint operator* (const bigint&, const bigint&);
-      friend bigint operator/ (const bigint&, const bigint&);
-      friend bigint operator% (const bigint&, const bigint&);
+    //
+    // Extended operators implemented with add/sub.
+    //
+    friend bigint operator* (const bigint&, const bigint&);
+    friend bigint operator/ (const bigint&, const bigint&);
+    friend bigint operator% (const bigint&, const bigint&);
 
-      //
-      // Comparison operators.
-      //
-      friend bool operator== (const bigint&, const bigint&);
-      friend bool operator<  (const bigint&, const bigint&);
+    //
+    // Comparison operators.
+    //
+    friend bool operator== (const bigint&, const bigint&);
+    friend bool operator<  (const bigint&, const bigint&);
 };
 
 //
@@ -68,20 +76,21 @@ class bigint {
 // Make the comparisons inline for efficiency.
 //
 
+ostream& operator<< (ostream& out, const bigvalue_t& that);
+
 bigint pow (const bigint& base, const bigint& exponent);
 
 inline bool operator!= (const bigint &left, const bigint &right) {
-   return not (left == right);
+    return not (left == right);
 }
 inline bool operator>  (const bigint &left, const bigint &right) {
-   return right < left;
+    return right < left;
 }
 inline bool operator<= (const bigint &left, const bigint &right) {
-   return not (right < left);
+    return not (right < left);
 }
 inline bool operator>= (const bigint &left, const bigint &right) {
-   return not (left < right);
+    return not (left < right);
 }
-
 #endif
 

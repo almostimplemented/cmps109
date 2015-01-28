@@ -13,4 +13,7 @@ arbitrary precision integer arithmetic in the style of dc(1).
 The class bigint intermixes arbitrarily with simple integer arithmetic.
 The man page for dc(1) can be used as a reference for this program. All
 of the following commands are implemented:
+
     + - * / % ^ c d f p q
+
+

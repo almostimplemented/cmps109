@@ -30,7 +30,7 @@ ci : ${ALLSOURCES}
 	cid + ${ALLSOURCES}
 
 clean :
-	- rm ${OBJECTS} ${DEPFILE} core ${EXECBIN}.errs
+	- rm ${OBJECTS} ${DEPFILE} ${EXECBIN}.errs
 
 spotless : clean
 	- rm ${EXECBIN}
