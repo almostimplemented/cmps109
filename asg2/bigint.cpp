@@ -10,6 +10,9 @@ using namespace std;
 
 #include "bigint.h"
 #include "debug.h"
+#include "util.h"
+
+#define LINE_LIMIT 69
 
 bigint::bigint (long that): long_value (that) {
     init(to_string(that));
@@ -28,7 +31,7 @@ bigint::bigint (const string& that) {
 void bigint::init (const string& that) {
     negative = false;
     auto itor = that.cbegin();
-    if (itor != that.cend() and *itor == '_') {
+    if (itor != that.cend() and (*itor == '_' || *itor == '-')) {
         negative = true;
         ++itor;
     }
@@ -40,7 +43,6 @@ void bigint::init (const string& that) {
             ritor != that.crend() && *ritor != '_';
             ritor++) {
         big_value.push_back(*ritor - '0');
-        DEBUGF ('~', *ritor - '0')
     }
     long_value = negative ? - newval : + newval;
 }
@@ -200,6 +202,7 @@ bigint operator- (const bigint& right) {
 }
 
 long bigint::to_long() const {
+    DEBUGF ('^', "this.long_value = " << long_value);
     if (*this <= bigint (numeric_limits<long>::min())
             or *this > bigint (numeric_limits<long>::max()))
         throw range_error ("bigint__to_long: out of range");
@@ -410,9 +413,6 @@ bigint::quot_rem divide(const bigvalue_t& x, const bigvalue_t& y) {
     m = y.size();
     if (m == 1) {
         y1 = y.at(m - 1);
-        if (y1 == 0) {
-            // complain
-        }
         return make_pair(bigint(partial_quot(x, y1)),
                          bigint(partial_rem(x, y1)));
     } else {
@@ -424,6 +424,7 @@ bigint::quot_rem divide(const bigvalue_t& x, const bigvalue_t& y) {
 }
 
 bigint operator/ (const bigint& left, const bigint& right) {
+    if (right == 0) throw ydc_exn ("ydc: divid by zero");
     bigint result = divide (left.big_value, right.big_value).first;
     result.negative = left.negative ^ right.negative;
     return result;
@@ -431,16 +432,39 @@ bigint operator/ (const bigint& left, const bigint& right) {
 
 bigint operator% (const bigint& left, const bigint& right) {
     bigint result = divide (left.big_value, right.big_value).second;
-    result.negative = false;
+    result.negative = left.negative ^ right.negative;
     return result;
 }
 
 bool operator== (const bigint& left, const bigint& right) {
-    return left.long_value == right.long_value;
+    if (left.negative != right.negative)
+        return false;
+    if (left.big_value.size() != right.big_value.size())
+        return false;
+
+    for (size_t i = 0; i < left.big_value.size(); i++) 
+        if (left.big_value.at(i) != right.big_value.at(i))
+            return false;
+
+    return true;
 }
 
 bool operator< (const bigint& left, const bigint& right) {
-    return left.long_value < right.long_value;
+    bool retval;
+    if (left.negative) {
+        if (!right.negative)
+            retval = true;
+        else 
+            retval = do_bigless(right.big_value, left.big_value);
+    } else {
+        if (right.negative)
+            retval = false;
+        else 
+            retval = do_bigless(left.big_value, right.big_value);
+    }
+    DEBUGF ('l', "operator<(" << left << ", " << right 
+                       << ") = " << retval) 
+    return retval;
 }
 
 ostream& operator<< (ostream& out, const bigint& that) {
@@ -451,10 +475,16 @@ ostream& operator<< (ostream& out, const bigint& that) {
 }
 
 ostream& operator<< (ostream& out, const bigvalue_t& that) {
+    size_t i = 0;
     for (auto rit  = that.crbegin();
             rit != that.crend();
             ++rit) {
         out << (int) *rit;
+        i++;
+        if (i == LINE_LIMIT) {
+            out << "\\" << endl;
+            i = 0;
+        }
     }
     return out;
 }
