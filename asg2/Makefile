@@ -39,6 +39,12 @@ dep : ${CPPSOURCE} ${CPPHEADER}
 	@ echo "# ${DEPFILE} created `LC_TIME=C date`" >${DEPFILE}
 	${MAKEDEPCPP} ${CPPSOURCE} >>${DEPFILE}
 
+submit :
+	submit cmps109-wm.w15 asg2 ${ALLSOURCES}
+	rm -rf latest_submit
+	mkdir latest_submit
+	cp ${ALLSOURCES} .score/* latest_submit
+
 ${DEPFILE} :
 	@ touch ${DEPFILE}
 	${GMAKE} dep
