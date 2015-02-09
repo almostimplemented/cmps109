@@ -51,20 +51,11 @@ const string datestring () {
    return timebuf;
 }
 
-
-list<string> split (const string& line, const string& delimiters) {
-   list<string> words;
-   size_t end = 0;
-   // Loop over the string, splitting out words, and for each word
-   // thus found, append it to the output list<string>.
-   for (;;) {
-      size_t start = line.find_first_not_of (delimiters, end);
-      if (start == string::npos) break;
-      end = line.find_first_of (delimiters, start);
-      words.push_back (line.substr (start, end - start));
-   }
-   TRACE ('u', words);
-   return words;
+string trim(const string& str) {
+   size_t first = str.find_first_not_of (" \t");
+   if (first == string::npos) return "";
+   size_t last = str.find_last_not_of (" \t");
+   return str.substr (first, last - first + 1);
 }
 
 ostream& complain() {

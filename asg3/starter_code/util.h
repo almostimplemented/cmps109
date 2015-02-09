@@ -17,6 +17,7 @@
 using namespace std;
 
 #include "trace.h"
+#include "xpair.h"
 
 //
 // sys_info -
@@ -46,15 +47,11 @@ class sys_info {
 const string datestring ();
 
 //
-// split -
-//    Split a string into a list<string>..  Any sequence
-//    of chars in the delimiter string is used as a separator.  To
-//    Split a pathname, use "/".  To split a shell command, use " ".
-//
+// trim -
+//    Removes leading and trailing whitespace of string.
 
-list<string> split (const string& line, const string& delimiter);
+string trim(const string&str);
 
-
 //
 // complain -
 //    Used for starting error messages.  Sets the exit status to
@@ -104,6 +101,14 @@ item_t from_string (const string&);
 //
 // Put the RCS Id string in the object file.
 //
+
+
+//
+// Simple noop struct
+//
+struct noop {
+        void operator()(...) const {}
+};
 
 #include "util.tcc"
 #endif
