@@ -1,4 +1,9 @@
-// $Id: bigint.h,v 1.16 2014-07-02 20:01:17-07 - - $
+// Author: Andrew Edwards
+// Email:  ancedwar@ucsc.edu
+// ID:     1253060
+// Date:   2015 Jan 23
+//
+// bigint.h
 
 #ifndef __BIGINT_H__
 #define __BIGINT_H__

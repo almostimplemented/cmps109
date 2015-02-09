@@ -1,4 +1,10 @@
-// $Id: main.cpp,v 1.41 2014-07-02 20:01:17-07 - - $
+// Author: Andrew Edwards
+// Email:  ancedwar@ucsc.edu
+// ID:     1253060
+// Date:   2015 Jan 23
+//
+// main.cpp
+
 
 #include <deque>
 #include <iostream>

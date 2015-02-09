@@ -1,4 +1,9 @@
-// $Id: bigint.cpp,v 1.61 2014-06-26 17:06:06-07 - - $
+// Author: Andrew Edwards
+// Email:  ancedwar@ucsc.edu
+// ID:     1253060
+// Date:   2015 Jan 23
+//
+// bigint.cpp
 
 #include <cstdlib>
 #include <exception>
