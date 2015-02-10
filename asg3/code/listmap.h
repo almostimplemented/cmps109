@@ -23,9 +23,11 @@ class listmap {
       struct node: link {
          value_type value{};
          node (link* next, link* prev, const value_type&);
+         node (node* next, node* prev, const value_type&);
       };
       node* anchor() { return static_cast<node*> (&anchor_); }
       link anchor_ {anchor(), anchor()};
+      size_t size {0};
    public:
       class iterator;
       listmap(){};
@@ -33,14 +35,13 @@ class listmap {
       listmap& operator= (const listmap&);
       ~listmap();
       iterator insert (const value_type&);
-      iterator find (const key_type&) const;
+      iterator find (const key_type&);
       iterator erase (iterator position);
       iterator begin();
       iterator end();
       bool empty() const;
 };
 
-
 template <typename Key, typename Value, class Less=xless<Key>>
 class listmap<Key,Value,Less>::iterator {
    private:
