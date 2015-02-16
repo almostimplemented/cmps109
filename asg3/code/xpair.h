@@ -27,7 +27,7 @@ struct xpair {
 
 template <typename First, typename Second>
 ostream& operator<< (ostream& out, const xpair<First,Second>& pair) {
-   out << "{" << pair.first << "," << pair.second << "}";
+   out << pair.first << " = " << pair.second;
    return out;
 }
 

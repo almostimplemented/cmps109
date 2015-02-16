@@ -21,12 +21,6 @@ listmap<Key,Value,Less>::node::node (node* next, node* prev,
 //
 // listmap::node::node (link*, link*, const value_type&)
 //
-template <typename Key, typename Value, class Less>
-listmap<Key,Value,Less>::node::node (link* next, link* prev,
-        const value_type& value):
-    link (static_cast<node*>(next), 
-            static_cast<node*>(prev)), value (value) {
-    }
 //
 /////////////////////////////////////////////////////////////////
 // Operations on listmap.
@@ -39,6 +33,8 @@ listmap<Key,Value,Less>::node::node (link* next, link* prev,
 template <typename Key, typename Value, class Less>
 listmap<Key,Value,Less>::~listmap() {
     TRACE ('l', (void*) this);
+    while (anchor_.next != anchor())
+        erase(begin());
 }
 
 //
@@ -74,23 +70,18 @@ template <typename Key, typename Value, class Less>
 typename listmap<Key,Value,Less>::iterator
 listmap<Key,Value,Less>::insert (const value_type& pair) {
     TRACE ('l', &pair << "->" << pair);
-    node* n;
-    if (anchor_.next == anchor()) {
-        n = new node(anchor(), anchor(), pair);
-        anchor_.next = n;
-        anchor_.prev = n;
-        return iterator(n);
+    iterator i;
+    Less less;
+    for(i = begin(); i != end() and less(i->first, pair.first); ++i);
+    if (i != end() and not less(pair.first, i->first)) {
+        // Key found; update:
+        i->second = pair.second;
+        return i;
     }
-    for(n = anchor_.next; n != anchor(); n = n->next) {
-        TRACE ('l', "node->value: " << n->value);
-        if (n->value.first == pair.first) {
-            n->value.second = pair.second;
-            return iterator(n);
-        }
-    }
-    n = new node(anchor(), anchor_.prev, pair);
-    anchor_.prev->next = n;
-    anchor_.prev = n;
+    // Key not found; make new
+    node* n = new node(i.where, i.where->prev, pair);
+    i.where->prev->next = n;
+    i.where->prev = n;
     return iterator(n);
 }
 
@@ -101,12 +92,14 @@ template <typename Key, typename Value, class Less>
 typename listmap<Key,Value,Less>::iterator
 listmap<Key,Value,Less>::find (const key_type& that) {
     TRACE ('l', that);
-    node* n;
-    for(n = anchor_.next; n != anchor(); n = n->next) {
-        if (n->value.first == that)
-            return iterator(n);
+    iterator i;
+    Less less;
+    for(i = begin(); i != end() and less(i->first, that); ++i);
+    if (i != end() and not less(that, i->first)) {
+        // Key found; return:
+        return i;
     }
-    TRACE('l', "key: " << " not found");
+
     return end();
 }
 
@@ -116,12 +109,14 @@ listmap<Key,Value,Less>::find (const key_type& that) {
 template <typename Key, typename Value, class Less>
 typename listmap<Key,Value,Less>::iterator
 listmap<Key,Value,Less>::erase (iterator position) {
-    TRACE ('l', &*position);
+    TRACE ('l',&*position);
     position.where->prev->next = position.where->next;
-    TRACE ('l', "position.where->prev->next = " << position.where->next);
+    TRACE ('l',"position.where->prev->next = " << position.where->next);
     position.where->next->prev = position.where->prev;
-    TRACE ('l', "position.where->next->prev = " << position.where->prev);
-    return iterator(position.where->next);
+    TRACE ('l',"position.where->next->prev = " << position.where->prev);
+    iterator retval(position.where->next);
+    position.erase();
+    return retval;
 }
 
 //
@@ -129,6 +124,14 @@ listmap<Key,Value,Less>::erase (iterator position) {
 // Operations on listmap::iterator.
 /////////////////////////////////////////////////////////////////
 //
+
+// 
+// void listmap::iterator::erase()
+//
+template <typename Key, typename Value, class Less>
+void listmap<Key,Value,Less>::iterator::erase() {
+    delete where;
+}
 
 //
 // listmap::value_type& listmap::iterator::operator*()

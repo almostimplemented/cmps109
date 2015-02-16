@@ -19,7 +19,7 @@ CPPSOURCE   = trace.cpp util.cpp main.cpp
 ALLCPPSRC   = ${CPPHEADER} ${TEMPLATES} ${CPPSOURCE}
 OBJECTS     = ${CPPSOURCE:.cpp=.o}
 EXECBIN     = keyvalue
-OTHERS      = ${MKFILE}
+OTHERS      = ${MKFILE} README
 ALLSOURCES  = ${ALLCPPSRC} ${OTHERS}
 LISTING     = Listing.ps
 
@@ -43,6 +43,10 @@ clean :
 
 spotless : clean
 	- rm ${EXECBIN} ${LISTING} ${LISTING:.ps=.pdf}
+
+submit :
+	submit cmps109-wm.w15 asg3 ${ALLSOURCES}
+	cp ${ALLSOURCES} ../grading
 
 dep : ${ALLCPPSRC}
 	@ echo "# ${DEPFILE} created `LC_TIME=C date`" >${DEPFILE}

@@ -33,63 +33,76 @@ void scan_options (int argc, char** argv) {
     }
 }
 
-int main (int argc, char** argv) {
-    sys_info::set_execname (argv[0]);
-    scan_options (argc, argv);
-    // Use istream pointer to use one variable for cin and files
-    istream* fp;
-    string filename;
-    str_str_map test;
+void map_loop(str_str_map& m, string& filename, istream& infile) {
     string key;
     string value;
-    for (char** argp = &argv[optind]; argp != &argv[argc]; ++argp) {
-        filename = *argp;
-        if (filename == "-")
-            fp = &cin;
-        else {
-            fp = new ifstream(filename);
-            if ( !fp->good() ) {
-                cerr << "keyvalue: could not open file: " << *argp << endl;
-                continue;
-            }
+    for (int i = 1 ;; ++i) {
+        string line;
+        getline (infile, line);
+        string l = trim(line);
+        if (infile.eof()) break;
+        cout << filename << ": " << i << ": " << line << endl;
+        if (l.size() == 0 or l[0] == '#')
+            continue;
+        size_t pos = line.find_first_of ("=");
+        if (pos == string::npos) {
+            key = trim(line);
+            str_str_map::iterator it = m.find(key);
+            if (it == m.end())
+                cout << key << ": key not found" << endl;
+            else
+                cout << *it << endl;
+            continue;
+        } else {
+            key   = trim(line.substr(0, pos == 0 ? 0 : pos));
+            value = trim(line.substr(pos + 1));
         }
-        for (;;) {
-            string line;
-            getline (*fp, line);
-            string l = trim(line);
-            if (fp->eof()) break;
-            if (l.size() == 0 or l[0] == '#')
-                continue;
-            size_t pos = line.find_first_of ("=");
-            if (pos == string::npos) {
-                key = line;
-                str_str_map::iterator it = test.find(key);
-                if (it == test.end())
-                    cout << key << ": key not found" << endl;
-                else
+        if (key == "" and value == "") {
+            for (str_str_map::iterator it  = m.begin();
+                                      it != m.end();
+                                      ++it)
+                cout << *it << endl;
+        } else if (key == "") {
+            for (str_str_map::iterator it  = m.begin();
+                                      it != m.end();
+                                      ++it)
+                if (it->second == value)
                     cout << *it << endl;
+        } else if (value == "") {
+            str_str_map::iterator it = m.find(key);
+            if (it != m.end())
+                m.erase(it);
+        } else {
+            str_str_pair pair(key, value);
+            m.insert(pair);
+            cout << pair << endl;
+        }
+    }
+}
+
+int main (int argc, char** argv) {
+    str_str_map m;
+    string execname(argv[0]);
+    scan_options (argc, argv);
+    // Use istream pointer to use one variable for cin and files
+    string filename("-");
+    if (argc == 1) map_loop(m, filename, cin);
+    for (int i = 1; i < argc; i++) {
+        filename = string(argv[i]);
+        if (filename == "-") {
+            map_loop(m, filename, cin);
+        } else {
+            ifstream infile(filename);
+            if ( infile.fail() ) {
+                cerr << execname << ": " << filename 
+                     << ": No such file or directory" << endl;
                 continue;
             } else {
-                key   = trim(line.substr(0, pos == 0 ? 0 : pos - 1));
-                value = trim(line.substr(pos + 1));
-            }
-            if (key == "" and value == "")
-                cout << " = " << endl;
-            else if (key == "") {
-                cout << " = value " << endl;
-            } else if (value == "") {
-                str_str_map::iterator it = test.find(key);
-                if (it == test.end())
-                    cout << key << ": key not found" << endl;
-                else
-                    test.erase(it);
-            } else {
-                test.insert(str_str_pair(key, value));
+                map_loop(m, filename, infile);
+                infile.close();
             }
         }
     }
-
-    cout << "EXIT_SUCCESS" << endl;
     return EXIT_SUCCESS;
 }
 
