@@ -45,13 +45,41 @@ polygon::polygon (const vertex_list& vertices): vertices(vertices) {
 }
 
 rectangle::rectangle (GLfloat width, GLfloat height):
-            polygon({}) {
+            polygon({{0, 0}, {width, 0}, 
+                     {width, height}, {0, height}}) {
    DEBUGF ('c', this << "(" << width << "," << height << ")");
 }
 
 square::square (GLfloat width): rectangle (width, width) {
    DEBUGF ('c', this);
 }
+
+diamond::diamond (const GLfloat width, const GLfloat height):
+            polygon({{0, 0}, {-width / 2, height / 2},
+                     {0, height}, {width / 2, height / 2}}) {
+   DEBUGF ('c', this << "(" << width << "," << height << ")");
+}
+
+triangle::triangle (const vertex_list& vertices): polygon(vertices) {
+   DEBUGF ('c', this);
+}
+
+right_triangle::right_triangle (const GLfloat width, 
+                                const GLfloat height):
+    triangle({{0,0}, {0, height}, {width, 0}}) {
+   DEBUGF ('c', this << "(" << width << "," << height << ")");
+}
+
+isosceles::isosceles (const GLfloat width, const GLfloat height):
+    triangle({{-width/2,0}, {width/2, 0}, {0, height}}) {
+   DEBUGF ('c', this << "(" << width << "," << height << ")");
+}
+
+equilateral::equilateral (const GLfloat width):
+    isosceles(width, sqrt(3) * width / 2) {
+   DEBUGF ('c', this << "(" << width << ")");
+}
+
 
 void text::draw (const vertex& center, const rgbcolor& color) const {
    DEBUGF ('d', this << "(" << center << "," << color << ")");
@@ -80,6 +108,23 @@ void ellipse::draw (const vertex& center, const rgbcolor& color) const {
 
 void polygon::draw (const vertex& center, const rgbcolor& color) const {
    DEBUGF ('d', this << "(" << center << "," << color << ")");
+   GLfloat xbar;
+   GLfloat ybar;
+   int i = 0;
+   for (vertex v : vertices) {
+       xbar = (xbar * i + v.xpos)/(i + 1);
+       ybar = (ybar * i + v.ypos)/(i + 1);
+       i++;
+   }
+   DEBUGF ('d', "xbar: " << xbar << ", ybar: " << ybar );
+   glBegin(GL_POLYGON);
+   glColor3ubv(color.ubvec);
+   for (vertex v : vertices) {
+       glVertex2f(center.xpos + v.xpos - xbar,
+                  center.ypos + v.ypos - ybar);
+
+   }
+   glEnd();
 }
 
 void shape::show (ostream& out) const {
