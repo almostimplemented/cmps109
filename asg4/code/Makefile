@@ -20,7 +20,7 @@ OBJECTS     = ${CPPSOURCE:.cpp=.o}
 LINKLIBS    = -lGL -lGLU -lglut -lm
 
 CLASS       = cmps109-wm.w15
-PROJECT     = asg3
+PROJECT     = asg4
 
 all : ${EXECBIN}
 	- checksource ${ALLSOURCES}
@@ -39,7 +39,7 @@ ci : ${ALLSOURCES}
 	cid + ${ALLSOURCES}
 
 clean :
-	- rm ${OBJECTS} ${DEPFILE} core ${GENFILES}
+	- rm ${OBJECTS} ${DEPFILE} ${GENFILES}
 
 spotless : clean
 	- rm ${EXECBIN} 

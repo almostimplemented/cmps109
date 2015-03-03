@@ -42,6 +42,9 @@ void parsefile (const string& infilename, istream& infile) {
       }catch (runtime_error error) {
          complain() << infilename << ":" << linenr << ": "
                     << error.what() << endl;
+      } catch (invalid_argument error) {
+         complain() << infilename << ":" << linenr << ": "
+            << error.what() << ": cannot perform conversion" << endl;
       }
    }
    DEBUGF ('m', infilename << " EOF");

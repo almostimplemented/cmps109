@@ -84,7 +84,12 @@ equilateral::equilateral (const GLfloat width):
 
 void text::draw (const vertex& center, const rgbcolor& color) const {
    DEBUGF ('d', this << "(" << center << "," << color << ")");
-   glColor3ubv(color.ubvec);
+   rgbcolor textcolor;
+   if (window::selected == true)
+       textcolor = rgbcolor(window::border_color);
+   else
+       textcolor = color;
+   glColor3ubv(textcolor.ubvec);
    glRasterPos2f(center.xpos, center.ypos);
    glutBitmapString(glut_bitmap_font, 
            reinterpret_cast<const unsigned char*>(textdata.c_str())); 
