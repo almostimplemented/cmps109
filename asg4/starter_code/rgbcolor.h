@@ -24,6 +24,7 @@ struct rgbcolor {
    explicit rgbcolor (const string&);
    const GLubyte* ubvec3() { return ubvec; }
    operator string() const;
+   static bool colorExists(const string&);
 };
 
 ostream& operator<< (ostream&, const rgbcolor&);

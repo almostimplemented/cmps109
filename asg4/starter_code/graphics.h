@@ -21,10 +21,7 @@ class object {
       // Default copiers, movers, dtor all OK.
       object (const shared_ptr<shape>&, vertex&, rgbcolor&);
       void draw() { pshape->draw (center, color); }
-      void move (GLfloat delta_x, GLfloat delta_y) {
-         center.xpos += delta_x;
-         center.ypos += delta_y;
-      }
+      void move (GLfloat delta_x, GLfloat delta_y);
 };
 
 class mouse {
@@ -46,11 +43,11 @@ class mouse {
 class window {
       friend class mouse;
    private:
-      static int width;         // in pixels
-      static int height;        // in pixels
       static vector<object> objects;
       static size_t selected_obj;
       static mouse mus;
+      static int width;         // in pixels
+      static int height;        // in pixels
    private:
       static void close();
       static void entry (int mouse_entered);
@@ -66,7 +63,15 @@ class window {
                   objects.push_back (obj); }
       static void setwidth (int width_) { width = width_; }
       static void setheight (int height_) { height = height_; }
+      static void move_selected_object(int dx, int dy);
+      static void select_object(int obj);
       static void main();
+      static int delta;
+      static int border_width;
+      static string border_color;
+      static bool selected;
+      static int get_width() {return width;}
+      static int get_height() {return height;}
 };
 
 #endif

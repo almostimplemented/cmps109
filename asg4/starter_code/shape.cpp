@@ -5,6 +5,7 @@
 using namespace std;
 
 #include "shape.h"
+#include "graphics.h"
 #include "util.h"
 
 static unordered_map<void*,string> fontname {
@@ -104,6 +105,20 @@ void ellipse::draw (const vertex& center, const rgbcolor& color) const {
        glVertex2f(xpos, ypos);
    }
    glEnd();
+
+   if (window::selected == true) {
+       glLineWidth(window::border_width);
+       glBegin (GL_LINE_LOOP);
+       glEnable (GL_LINE_SMOOTH);
+       glColor3ubv(rgbcolor(window::border_color).ubvec);
+       const float delta = 2 * M_PI / 32;
+       for (float theta = 0; theta < 2 * M_PI; theta += delta) {
+           float xpos = dimension.xpos/2 * cos(theta) + center.xpos;
+           float ypos = dimension.ypos/2 * sin(theta) + center.ypos;
+           glVertex2f(xpos, ypos);
+       }
+       glEnd();
+   }
 }
 
 void polygon::draw (const vertex& center, const rgbcolor& color) const {
@@ -120,11 +135,24 @@ void polygon::draw (const vertex& center, const rgbcolor& color) const {
    glBegin(GL_POLYGON);
    glColor3ubv(color.ubvec);
    for (vertex v : vertices) {
-       glVertex2f(center.xpos + v.xpos - xbar,
-                  center.ypos + v.ypos - ybar);
-
+       GLfloat x = center.xpos + v.xpos - xbar;
+       GLfloat y = center.ypos + v.ypos - ybar;
+       glVertex2f(x,y);
    }
    glEnd();
+
+   if (window::selected == true) {
+       glLineWidth(window::border_width);
+       glBegin (GL_LINE_LOOP);
+       glColor3ubv(rgbcolor(window::border_color).ubvec);
+       glLineWidth(window::border_width);
+       for (vertex v : vertices) {
+           GLfloat x = center.xpos + v.xpos - xbar;
+           GLfloat y = center.ypos + v.ypos - ybar;
+           glVertex2f(x,y);
+       }
+       glEnd();
+   }
 }
 
 void shape::show (ostream& out) const {

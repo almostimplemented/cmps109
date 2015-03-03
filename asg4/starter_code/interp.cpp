@@ -26,6 +26,8 @@ unordered_map<string,interpreter::interpreterfn>
 interpreter::interp_map {
    {"define" , &interpreter::do_define },
    {"draw"   , &interpreter::do_draw   },
+   {"border" , &interpreter::do_border },
+   {"moveby" , &interpreter::do_moveby },
 };
 
 unordered_map<string,interpreter::factoryfn>
@@ -56,7 +58,7 @@ void interpreter::interpret (const parameters& params) {
    DEBUGF ('i', params);
    param begin = params.cbegin();
    // First word contains command name
-   // Either define or draw
+   // Either define, draw, border, or moveby
    string command = *begin;
    auto itor = interp_map.find (command);
    if (itor == interp_map.end()) throw runtime_error ("syntax error");
@@ -82,6 +84,26 @@ void interpreter::do_draw (param begin, param end) {
                  from_string<GLfloat> (begin[3])};
    rgbcolor color {begin[0]};
    window::push_back(object(itor->second, where, color));
+}
+
+void interpreter::do_border(param begin, param end) {
+   DEBUGF ('f', range (begin, end));
+   if (end - begin != 2) throw runtime_error("syntax error");
+   string color = *begin++;
+   string thickness = *begin;
+   if (!rgbcolor::colorExists(color))
+       throw runtime_error (color + ": no such color");
+
+   window::border_color = color;
+   window::border_width = stoi(thickness);
+   DEBUGF ('f', "window::border_color: " << window::border_color);
+   DEBUGF ('f', "window::border_width: " << window::border_width);
+}
+
+void interpreter::do_moveby(param begin, param end) {
+   DEBUGF ('f', range (begin, end));
+   if (end - begin != 1) throw runtime_error("syntax error");
+   window::delta = stoi(*begin);
 }
 
 shape_ptr interpreter::make_shape (param begin, param end) {

@@ -40,6 +40,10 @@ rgbcolor::operator string() const {
    return result.str();
 }
 
+bool rgbcolor::colorExists(const string& color) {
+    return color_names.find(color) != color_names.end();
+}
+
 ostream& operator<< (ostream& out, const rgbcolor& color) {
    out << string (color);
    return out;
