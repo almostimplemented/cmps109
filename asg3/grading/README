@@ -1,0 +1,66 @@
+Author: Andrew Edwards
+Email:  ancedwar@ucsc.edu
+ID:     1253060
+Date:   2015 Feb 15
+
+
+Assignment 3, Advanced Programming
+Templates and Iterators
+
+In this assignment, I implemented template code and use no template
+classes from the STL. I also wrote my own code to handle file I/O.
+
+Only the following include statements were used:
+    <cassert>, <cerrno>, <cstdlib>, <exception>, <fstream>,
+    <iomanip>, <iostream>, <stdexcept>, <string>, <typeinfo>.
+
+NAME
+     keyvalue -- manage a list of key and value pairs
+
+SYNOPSIS
+     keyvalue [-@ flags] [filename...]
+
+DESCRIPTION
+     Input is read from each file in turn.  Before any processing,
+     each input line is echoed to cout, preceded by its filename and
+     line number within the file.  The name of cin is printed as a
+     minus sign (-).
+
+     Each non-comment line causes some action on the part of the
+     program, as described below.  Before processing a command,
+     leading and trailing white space is trimmed off of the key and
+     off of the value.  White space interior to the key or value is
+     not trimmed.  When a key and value pair is printed, the
+     equivalent of the format string used is "%s = %s\n".  Of course,
+     use <iostream>, not <stdio>.  The newline character is removed
+     from any input line before processing.  If there is more than one
+     equal sign on the line, the first separates the key from the
+     value, and the rest are part of the value.  Input lines are one
+     of the following:
+
+     #
+          Any input line whose first non-whitespace character is a
+          hash (#) is ignored as a comment.  This means that no key
+          can begin with a hash.  An empty line or a line consisting
+          of nothing but white space is ignored.
+
+     key
+          A line consisting of at least one non-whitespace character
+          and no equal sign causes the key and value pair to be
+          printed.  If not found, the message
+               key: key not found
+          is printed.  Note that the characters in italics are not
+          printed exactly.  The actual key is printed.  This message
+          is printed to cout.
+
+     key =
+          If there is only whitespace after the equal sign, the key
+          and value pair is deleted from the map.
+
+     key = value
+          If the key is found in the map, its value field is replaced
+          by the new value.  If not found, the key and value are
+          inserted in increasing lexicographic order, sorted by key.
+          The new key and value pair is printed.
+
+     =

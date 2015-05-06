@@ -1,0 +1,10 @@
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c debug.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c graphics.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c interp.cpp
+mk-colors.perl >colors.cppgen
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c rgbcolor.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c shape.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c util.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c main.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -o gdraw debug.o graphics.o interp.o rgbcolor.o shape.o util.o main.o -lGL -lGLU -lglut -lm
+checksource debug.h graphics.h interp.h rgbcolor.h shape.h util.h util.tcc debug.cpp graphics.cpp interp.cpp rgbcolor.cpp shape.cpp util.cpp main.cpp Makefile README mk-colors.perl

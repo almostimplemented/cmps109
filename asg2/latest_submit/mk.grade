@@ -1,0 +1,18 @@
+#!/bin/sh
+# $Id: mk.tests,v 1.4 2014-06-26 17:24:49-07 - - $
+#
+# This program just runs ydc from input to output.
+# It, like dc, does not bother with exit status or stdout/stderr.
+#
+export PATH=$PATH:/afs/cats.ucsc.edu/courses/cmps012b-wm/bin
+ulimit -f 32
+ulimit -t 120
+
+PROG=./ydc
+GRIND="valgrind --leak-check=full --show-reachable=yes"
+TEMPLATES="/afs/cats.ucsc.edu/courses/cmps109-wm/Assignments/asg2-dc-bigint/output/"
+
+for testout in *.ydc.out
+do
+    diff $testout $TEMPLATES/"${testout}put"
+done

@@ -36,7 +36,6 @@ void reply_ls (accepted_socket& client_sock, cix_header& header) {
    log << "sent " << ls_output.size() << " bytes" << endl;
 }
 
-
 bool SIGINT_throw_cix_exit = false;
 void signal_handler (int signal) {
    log << "signal_handler: caught " << strsignal (signal) << endl;

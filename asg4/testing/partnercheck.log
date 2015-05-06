@@ -1,0 +1,4 @@
+partnercheck: ./PARTNER: No such file or directory
+This is not an error if this student is working alone.
+This *IS* AN ERROR if working with a partner.
+

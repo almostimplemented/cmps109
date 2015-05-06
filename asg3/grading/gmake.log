@@ -1,0 +1,4 @@
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c trace.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c util.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -c main.cpp
+g++ -g -O0 -Wall -Wextra -std=gnu++11 -o keyvalue trace.o util.o main.o

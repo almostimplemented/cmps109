@@ -1,0 +1,10 @@
+sockets.o: sockets.cpp sockets.h
+signal_action.o: signal_action.cpp signal_action.h
+cix_protocol.o: cix_protocol.cpp cix_protocol.h sockets.h
+util.o: util.cpp util.h
+cix-daemon.o: cix-daemon.cpp cix_protocol.h sockets.h logstream.h \
+ signal_action.h
+cix-client.o: cix-client.cpp cix_protocol.h sockets.h logstream.h \
+ signal_action.h util.h
+cix-server.o: cix-server.cpp cix_protocol.h sockets.h logstream.h \
+ signal_action.h util.h
